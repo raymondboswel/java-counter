@@ -1,43 +1,21 @@
 package com.raymond.touchsides;
-
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Main {
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws IOException {
         Counter counter = new Counter();
         System.out.println("Please enter the path to the file that you would like to analyze.");
         Scanner scan = new Scanner(System.in);
-        String s = scan.next();
-        System.out.println("You have entered " + s);
-        //Path path = Paths.get("/home/raymond/IdeaProjects/word-counter/test.txt");
-        Path path = Paths.get("/home/raymond/IdeaProjects/word-counter/war_and_peace.txt");
+        String userPath = scan.next();
+        System.out.println("You have entered " + userPath);
+        Path path = Paths.get(userPath);
 
-        Stream<String> lines = Files.lines(path);
-        String data = lines
-                .map(l -> l.toLowerCase(Locale.ROOT))
-                .map(l -> l.replace(".", ""))
-                .map(l -> l.replace(",", ""))
-                .map(l -> l.replace("\"", "" ))
-                .map(l -> l.replace("\'", "" ))
-                .map(l -> l.replace("-", " " ))
-                .map(l -> l.replace("—", " " ))
-                .collect(Collectors.joining(" "));
-
-        String[] words = data.split(" ");
-
-        Arrays.stream(words).forEach(word -> {
-            counter.updateWordCount(word);
-        });
+        String[] words = FileReader.getWords(path);
+        counter.countWords(words);
 
         String mostFrequent = String.format("Most frequent word: %s occurred %d times", counter.mostFrequentWord, counter.mostFrequentCount);
         String mostFrequent7Letter = String.format("Most frequent 7 character word: %s occurred %d times", counter.mostFrequent7LetterWord, counter.mostFrequent7LetterCount);
@@ -61,7 +39,5 @@ public class Main {
         } catch(Exception e) {
             System.out.println("Failed to get the best scrabble word, was the text file empty?");
         }
-
-        lines.close();
     }
 }
